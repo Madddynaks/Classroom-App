@@ -10,13 +10,20 @@ import NotFound from "./pages/NotFound";
 import Login from "./components/Login";
 import Signup from "./components/Signup"; // Import Signup component
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth0 } from "@auth0/auth0-react";
+import LoginButton from "./pages/LoginButton";
 
 function App() {
   // const isAuthenticated = localStorage.getItem("token") ? true : false;
+  const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
 
   return (
     <Router>
-      <div className="flex h-screen">
+      {!isAuthenticated && (
+        <LoginButton/>
+      )}
+      {isAuthenticated && (
+        <div className="flex h-screen">
         {/* Sidebar */}
         {/* {isAuthenticated && <Sidebar />} */}
         <Sidebar/>
@@ -40,7 +47,7 @@ function App() {
               element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/login" />}
             /> */}
 
-            <Route path="/home" element={<HomePage/>}></Route>
+            <Route path="/" element={<HomePage/>}></Route>
             <Route path="/notes" element={<NotesPage />} />
             <Route path="/feedback" element={<FeedbackPage />} />
             <Route path="/manage-notes" element={<ManageNotes />} />
@@ -49,6 +56,7 @@ function App() {
           </Routes>
         </div>
       </div>
+      )}
     </Router>
   );
 }
