@@ -8,7 +8,7 @@ function Sidebar() {
 
   // Navigation items
   const navItems = [
-    { name: 'Home', path: '/home' },
+    { name: 'Home', path: '/' },
     { name: 'Notes', path: '/notes' },
     { name: 'Feedback', path: '/feedback' },
     { name: 'Manage Notes', path: '/manage-notes' },

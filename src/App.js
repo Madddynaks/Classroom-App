@@ -1,20 +1,29 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
-import HomePage from "./pages/HomePage";
-import NotesPage from "./pages/NotesPage";
-import FeedbackPage from "./pages/FeedbackPage";
-import ManageNotes from "./pages/ManageNotes";
-import AddAnnouncement from "./pages/AddAnnouncement";
-import NotFound from "./pages/NotFound";
-import Login from "./components/Login";
-import Signup from "./components/Signup"; // Import Signup component
-import ProtectedRoute from "./components/ProtectedRoute";
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Sidebar from './components/Sidebar';
+import HomePage from './pages/HomePage';
+import NotesPage from './pages/NotesPage';
+import FeedbackPage from './pages/FeedbackPage';
+import ManageNotes from './pages/ManageNotes';
+import AddAnnouncement from './pages/AddAnnouncement';
+import NotFound from './pages/NotFound';
 import { useAuth0 } from "@auth0/auth0-react";
 import LoginButton from "./pages/LoginButton";
 
 function App() {
-  // const isAuthenticated = localStorage.getItem("token") ? true : false;
+  // Notes State
+  const [notes, setNotes] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+
+  // Function to add a note
+  const addNote = (note) => {
+    setNotes((prevNotes) => [...prevNotes, note]);
+  };
+
+  // Function to add an announcement
+  const addAnnouncement = (announcement) => {
+    setAnnouncements((prevAnnouncements) => [...prevAnnouncements, announcement]);
+  };
   const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
 
   return (
@@ -25,8 +34,7 @@ function App() {
       {isAuthenticated && (
         <div className="flex h-screen">
         {/* Sidebar */}
-        {/* {isAuthenticated && <Sidebar />} */}
-        <Sidebar/>
+        <Sidebar />
 
         {/* Main Content */}
         <div className="flex-1 p-4 bg-gray-100 overflow-y-auto">
@@ -47,11 +55,12 @@ function App() {
               element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/login" />}
             /> */}
 
-            <Route path="/" element={<HomePage/>}></Route>
-            <Route path="/notes" element={<NotesPage />} />
+            <Route path="/" element={<HomePage announcements={announcements}/>}></Route>
+            <Route path="/notes" element={<NotesPage notes={notes}/>} />
             <Route path="/feedback" element={<FeedbackPage />} />
-            <Route path="/manage-notes" element={<ManageNotes />} />
-            <Route path="/add-announcement" element={<AddAnnouncement />} />
+            <Route path="/manage-notes" element={<ManageNotes addNote={addNote} />} />
+            <Route path="/add-announcement" element={<AddAnnouncement addAnnouncement={addAnnouncement} />} />
+            <Route path="/" element={<HomePage announcements={announcements} />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
