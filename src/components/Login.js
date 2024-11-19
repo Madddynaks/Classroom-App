@@ -25,7 +25,7 @@ const Login = () => {
       // If login is successful, store the token in localStorage
       localStorage.setItem('token', data.token);
       // Redirect the user to the home page
-      navigate('/home');
+      navigate('/');
     } else {
       // Handle login failure (e.g., show error message)
       alert('Invalid credentials');

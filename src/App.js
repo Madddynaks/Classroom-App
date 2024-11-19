@@ -7,6 +7,8 @@ import FeedbackPage from './pages/FeedbackPage';
 import ManageNotes from './pages/ManageNotes';
 import AddAnnouncement from './pages/AddAnnouncement';
 import NotFound from './pages/NotFound';
+import { useAuth0 } from "@auth0/auth0-react";
+import LoginButton from "./pages/LoginButton";
 
 function App() {
   // Notes State
@@ -22,19 +24,39 @@ function App() {
   const addAnnouncement = (announcement) => {
     setAnnouncements((prevAnnouncements) => [...prevAnnouncements, announcement]);
   };
+  const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
 
   return (
     <Router>
-      <div className="flex h-screen">
+      {!isAuthenticated && (
+        <LoginButton/>
+      )}
+      {isAuthenticated && (
+        <div className="flex h-screen">
         {/* Sidebar */}
         <Sidebar />
 
         {/* Main Content */}
         <div className="flex-1 p-4 bg-gray-100 overflow-y-auto">
           <Routes>
-            {/* Routes */}
-            <Route path="/home" element={<HomePage announcements={announcements} />} />
-            <Route path="/notes" element={<NotesPage notes={notes} />} />
+            {/* Routes for login and signup */}
+            {/* <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} /> Signup Route */}
+
+            {/* Protected Route: HomePage */}
+            {/* <Route
+              path="/home"
+              element={isAuthenticated ? <HomePage /> : <Navigate to="/login" />}
+            /> */}
+
+            {/* Redirect to /login if not authenticated */}
+            {/* <Route
+              path="/"
+              element={isAuthenticated ? <Navigate to="/home" /> : <Navigate to="/login" />}
+            /> */}
+
+            <Route path="/" element={<HomePage announcements={announcements}/>}></Route>
+            <Route path="/notes" element={<NotesPage notes={notes}/>} />
             <Route path="/feedback" element={<FeedbackPage />} />
             <Route path="/manage-notes" element={<ManageNotes addNote={addNote} />} />
             <Route path="/add-announcement" element={<AddAnnouncement addAnnouncement={addAnnouncement} />} />
@@ -43,6 +65,7 @@ function App() {
           </Routes>
         </div>
       </div>
+      )}
     </Router>
   );
 }
