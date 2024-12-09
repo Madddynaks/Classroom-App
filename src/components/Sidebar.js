@@ -1,10 +1,8 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { useAuth0 } from "@auth0/auth0-react";
 
 function Sidebar() {
   const navigate = useNavigate(); // Replace useHistory with useNavigate
-  const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
 
   // Navigation items
   const navItems = [
@@ -43,7 +41,6 @@ function Sidebar() {
       
       {/* Logout Button */}
       <button
-        onClick={logout}
         className="block px-4 py-2 mt-4 w-full text-gray-700 hover:bg-gray-200 bg-red-500 text-white"
       >
         Logout
