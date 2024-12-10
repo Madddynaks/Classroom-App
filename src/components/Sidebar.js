@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { deleteCookie } from '../actions/cookie';
 
 function Sidebar() {
   const navigate = useNavigate(); // Replace useHistory with useNavigate
@@ -15,13 +16,12 @@ function Sidebar() {
 
   // Logout function
   const handleLogout = () => {
-    localStorage.removeItem('token');  // Remove the JWT token
-    navigate('/login');  // Redirect to the login page
+    deleteCookie()
   };
 
   return (
     <div className="w-64 bg-white shadow-lg h-full">
-      <div className="p-4 text-center text-blue-600 text-xl font-bold">Notes App</div>
+      <div className="p-4 text-center text-blue-600 text-xl font-bold">Classroom App</div>
       <nav>
         {/* Render the navigation links */}
         {navItems.map((item) => (
@@ -41,7 +41,7 @@ function Sidebar() {
       
       {/* Logout Button */}
       <button
-        className="block px-4 py-2 mt-4 w-full text-gray-700 hover:bg-gray-200 bg-red-500 text-white"
+        className="block px-4 py-2 mt-4 w-full text-gray-700 hover:bg-gray-200 bg-red-500" onClick={handleLogout}
       >
         Logout
       </button>

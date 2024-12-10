@@ -9,10 +9,12 @@ import AddAnnouncement from './pages/AddAnnouncement';
 import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import Cookies from 'js-cookie';
+import { getCookie } from './actions/cookie';
 
 function App() {
-  // State to track token
-  const [token, setToken] = useState(Cookies.get("token"));
+  // State for token and user data
+  const [token, setToken] = useState(getCookie());
+  const [userData, setUserData] = useState(null);
 
   // Notes State
   const [notes, setNotes] = useState([]);
@@ -28,9 +30,8 @@ function App() {
     setAnnouncements((prevAnnouncements) => [...prevAnnouncements, announcement]);
   };
 
-  // Update token state if it changes in cookies
   useEffect(() => {
-    const tokenFromCookie = Cookies.get("token");
+    const tokenFromCookie = getCookie();
     setToken(tokenFromCookie);
   }, []); // Empty dependency array ensures this effect runs only once
 

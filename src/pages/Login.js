@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { login } from "../apis"; // Import the login API function
+import { login } from "../actions/apis"; // Import the login API function
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 function LoginPage() {

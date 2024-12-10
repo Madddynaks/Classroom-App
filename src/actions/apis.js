@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie"; // Import js-cookie to manage cookies
+import { setCookie } from "./cookie";
 
 // Set up a base URL for all API requests
 const API = axios.create({
@@ -15,13 +16,14 @@ export const login = async (email, password) => {
     const response = await API.post("/auth/login", { email, password }); // Backend login route
     if (response.data.token) {
       // Store the JWT token in cookies
-      Cookies.set("token", response.data.token); // Expires in 3 days, path set to root
+      // Cookies.set("token", response.data.token); // Expires in 3 days, path set to root
+      setCookie(response.data.token);
       window.location.reload();
     }
     return response.data; // Return the response data
   } catch (error) {
     console.error("Login API error:", error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || "Login failed");
+    throw new Error(error.response?.data?.message || "Login failed" );
   }
 };
 

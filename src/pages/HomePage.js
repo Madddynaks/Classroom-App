@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchAnnouncements } from "../apis"; // Import the fetchAnnouncements API function
+import { fetchAnnouncements } from "../actions/apis"; // Import the fetchAnnouncements API function
 
 function HomePage() {
   const [announcements, setAnnouncements] = useState([]);
