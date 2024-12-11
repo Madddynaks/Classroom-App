@@ -169,6 +169,20 @@ export const fetchAnnouncements = async () => {
       throw new Error(error.response?.data?.message || "Failed to add feedback");
     }
   };
+  export const addAnnouncement = async (data) => {
+    try {
+      const token = Cookies.get("token"); // Get token from cookies
+      
+      const response = await API.post("/announcements/add", data, {
+        headers: { token }
+      });
+  
+      return response.data; // Return the server response (success message, etc.)
+    } catch (error) {
+      console.error("Error adding announcement:", error);
+      throw new Error(error.response?.data?.message || "Failed to add  announcement");
+    }
+  };
 
 export default {
   login,
