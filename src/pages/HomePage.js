@@ -33,7 +33,7 @@ function HomePage() {
       const auth = getCookie();
       if (auth) {
         const result = await  validateToken(auth);
-        console.log("result", result);
+        console.log("result", result.role);
       }
     };
 
