@@ -66,7 +66,47 @@ export const fetchAnnouncements = async () => {
     }
   };
 
+  export const viewNotesTeacher= async () => {
+    try {
+      const token = Cookies.get("token"); // Get the token from cookies
+  
+      // If token exists, include it in the request header as 'token'
+      const response = await API.post("/view-notes-teacher", {}, { // Passing empty object for body
+        headers: {
+          token: token, // Send token in headers
+        },
+      });
+  
+    //   console.log(response.data); // Check response data in console
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error("Fetch Announcements API error:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Failed to fetch notes");
+    }
+  };
+
+  export const viewNotesStudent= async () => {
+    try {
+      const token = Cookies.get("token"); // Get the token from cookies
+  
+      // If token exists, include it in the request header as 'token'
+      const response = await API.post("/view-notes-student", {}, { // Passing empty object for body
+        headers: {
+          token: token, // Send token in headers
+        },
+      });
+  
+    //   console.log(response.data); // Check response data in console
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error("Fetch Announcements API error:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Failed to fetch notes");
+    }
+  };
+
 export default {
   login,
   fetchAnnouncements,
+  viewNotesStudent,
+  viewNotesTeacher
 };
