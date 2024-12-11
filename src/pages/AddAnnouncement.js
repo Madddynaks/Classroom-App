@@ -8,8 +8,12 @@ function AddAnnouncement({ addAnnouncement }) {
 
 
   useEffect(() => {
-    setSubjects(getSubjectsByTeacher());
-    console.log(subjects);
+    const assignSubjects = async () => {
+      const sub = await getSubjectsByTeacher();
+      setSubjects(sub);
+      console.log(sub)
+    }
+    assignSubjects();
   },[])
 
   // Handle form submission to add announcement
