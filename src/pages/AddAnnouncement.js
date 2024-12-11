@@ -1,42 +1,69 @@
 import React, { useState, useEffect } from "react";
 import { getSubjectsByTeacher } from "../actions/apis";
-import TeacherSubject from "../components/TeacherSubject";
+import TeacherSubject from "../components/DataGrid";
 import { DialogContent, DialogTitle, Modal, ModalClose, ModalDialog } from "@mui/joy";
 
-function AddAnnouncement({ addAnnouncement }) {
+function AddAnnouncement() {
   const [announcement, setAnnouncement] = useState("");
   const [subjects, setSubjects] = useState([]);
+  const [rows, setRows] = useState([]);
   const [selectedSubjects, setSelectedSubjects] = useState([]);
-  const [openSelectSubject, setOpenSelectSubject] = useState(false);
+  const [selectedSubjectIds, setSelectedSubjectIds] = useState([]);
+  const [openSelectSubjectModal, setOpenSelectSubjectModal] = useState(false);
 
-  // useEffect(() => {
-  //   setSubjects(getSubjectsByTeacher());
-  //   console.log(subjects);
-  // },[])
   useEffect(() => {
     const assignSubjects = async () => {
       const sub = await getSubjectsByTeacher();
-      setSubjects(sub);
-      console.log(sub)
-    }
+      setSubjects(sub.subjects);
+      const transformedRows = sub.subjects.map((data) => ({
+        _id: data._id,
+        name: data.name,
+        semester: data.semester,
+        branch: data.branch,
+      }));
+      setRows(transformedRows);
+    };
     assignSubjects();
-  },[])
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    // const newAnnouncement = {
+    //   semesters:selectedSubjects,
+    //   text: announcement,
+    // };
+    // addAnnouncement(newAnnouncement);
+    // setAnnouncement("");
+    // alert("Announcement added!");
+  };
 
-    const newAnnouncement = {
-      id: Date.now(),
-      text: announcement,
+  useEffect(() => {
+    const changeIds = () => {
+      const selectedIds = selectedSubjects.map((subject) => {
+        return subject._id;
+      });
+      setSelectedSubjectIds(selectedIds);
+      console.log(selectedIds);
     };
 
-    addAnnouncement(newAnnouncement);
-    setAnnouncement("");
-    alert("Announcement added!");
-  };
-  const addSelectedSubjects=()=>{
+    if (!openSelectSubjectModal) {
+      changeIds();
+    }
+  }, [openSelectSubjectModal]);
 
-  }
+  const columns = [
+    { field: "_id", headerName: "ID", width: 250 },
+    { field: "name", headerName: "Subject Name", width: 200 },
+    { field: "semester", headerName: "Semester", width: 200 },
+    { field: "branch", headerName: "Branch", width: 200 },
+  ];
+
+  const addSelectedSubjects = () => {
+    const selected = rows.filter((row) => selectedSubjectIds.includes(row._id));
+    setSelectedSubjects(selected);
+    setOpenSelectSubjectModal(false);
+  };
+
   return (
     <>
       <div className="p-4">
@@ -51,9 +78,7 @@ function AddAnnouncement({ addAnnouncement }) {
           />
           <button
             type="button"
-            onClick={() => {
-              setOpenSelectSubject(true);
-            }}
+            onClick={() => setOpenSelectSubjectModal(true)}
             className="mt-2 px-4 gap-2 py-2 bg-blue-500 text-white rounded mr-2"
           >
             Select Subjects
@@ -63,25 +88,24 @@ function AddAnnouncement({ addAnnouncement }) {
           </button>
         </form>
       </div>
-      <Modal
-        open={openSelectSubject}
-        onClose={() => {
-          setOpenSelectSubject(false);
-        }}
-      >
+      <Modal open={openSelectSubjectModal} onClose={() => setOpenSelectSubjectModal(false)}>
         <ModalDialog size="lg">
           <ModalClose style={{ zIndex: "10" }} />
-          <DialogTitle className="">Movement Confirmation</DialogTitle>
+          <DialogTitle>Select Subjects</DialogTitle>
           <DialogContent className="h-fit">
-            <TeacherSubject />
+            <TeacherSubject
+              changeState={setSelectedSubjectIds}
+              state={selectedSubjectIds}
+              columns={columns}
+              rows={rows}
+              selectedIds={selectedSubjectIds}
+            />
             <button
-            onClick={() => {
-              addSelectedSubjects();
-            }}
-            className="mt-2 px-4 gap-2 py-2 bg-blue-500 text-white rounded mr-2"
-          >
-            Confirm
-          </button>
+              onClick={addSelectedSubjects}
+              className="mt-2 px-4 gap-2 py-2 bg-blue-500 text-white rounded mr-2"
+            >
+              Confirm
+            </button>
           </DialogContent>
         </ModalDialog>
       </Modal>
