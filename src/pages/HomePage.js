@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchAnnouncements } from "../actions/apis"; // Import the fetchAnnouncements API function
+import { getCookie } from "../actions/cookie";
+import { validateToken } from "../actions/utils";
 
 function HomePage() {
   const [announcements, setAnnouncements] = useState([]);
@@ -23,6 +25,20 @@ function HomePage() {
 
     getAnnouncements();
   }, []); // Empty dependency array to fetch announcements only once when the component mounts
+
+
+      // Handle authentication token
+  useEffect(() => {
+    const handleAuthentication = async () => {
+      const auth = getCookie();
+      if (auth) {
+        const result = await  validateToken(auth);
+        console.log("result", result);
+      }
+    };
+
+    handleAuthentication();
+  }, []);
 
   return (
     <div className="p-4">

@@ -10,8 +10,12 @@ import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import Cookies from 'js-cookie';
 import { getCookie } from './actions/cookie';
+import { validateToken } from './actions/utils';
+
+
 
 function App() {
+  
   // State for token and user data
   const [token, setToken] = useState(getCookie());
   const [userData, setUserData] = useState(null);

@@ -25,12 +25,11 @@ export const validateToken = async (token) => {
     console.warn('Token is undefined or null');
     return null;
   }
-  
 
   try {
-    const secretKeyBytes = new TextEncoder().encode(process.env.SECRET_KEY);
+    const secretKey = process.env.REACT_APP_SECRET_KEY;
+    const secretKeyBytes = new TextEncoder().encode(secretKey);
     const { payload } = await jwtVerify(token, secretKeyBytes);
-    console.log('JWT validation successful:', payload);
     return payload;
   } catch (error) {
     console.error('Token verification failed:', error);

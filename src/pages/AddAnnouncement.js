@@ -1,7 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getSubjectsByTeacher } from '../actions/apis';
+
 
 function AddAnnouncement({ addAnnouncement }) {
   const [announcement, setAnnouncement] = useState('');
+  const [subjects,setSubjects] = useState([])
+
+
+  useEffect(() => {
+    setSubjects(getSubjectsByTeacher());
+    console.log(subjects);
+  },[])
 
   // Handle form submission to add announcement
   const handleSubmit = (e) => {
