@@ -66,6 +66,21 @@ export const fetchAnnouncements = async () => {
     }
   };
 
+  export const getSubjectsByStudent = async () => {
+    try {
+      const token = Cookies.get("token"); // Ensure token is retrieved correctly
+      
+      const response = await API.post("/getSubjectsByStudent", {}, { 
+        headers: { token } // Send token in headers for authentication
+      });
+      
+      return response.data; // Return the subjects data from response
+    } catch (error) {
+      console.error("Error fetching subjects:", error);
+      throw new Error(error.response?.data?.message || "Failed to fetch subjects");
+    }
+  };
+
   export const viewNotesTeacher= async () => {
     try {
       const token = Cookies.get("token"); // Get the token from cookies
@@ -104,9 +119,43 @@ export const fetchAnnouncements = async () => {
     }
   };
 
+  export const addNotesTeacher = async (data) => {
+    try {
+      const token = Cookies.get("token"); // Get the token from cookies
+  
+      // Send the subjectId and noteText in the request body
+      const response = await API.post("/add-note-teacher", data, {
+        headers: {
+          token: token, // Send token in headers
+        },
+      });
+  
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error("Fetch Announcements API error:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Failed to add Note");
+    }
+  };
+
+  export const addFeedback = async (data) => {
+    try {
+      const token = Cookies.get("token"); // Get token from cookies
+      
+      const response = await API.post("/add-feedback", data, {
+        headers: { token }
+      });
+  
+      return response.data; // Return the server response (success message, etc.)
+    } catch (error) {
+      console.error("Error adding feedback:", error);
+      throw new Error(error.response?.data?.message || "Failed to add feedback");
+    }
+  };
+
 export default {
   login,
   fetchAnnouncements,
   viewNotesStudent,
-  viewNotesTeacher
+  viewNotesTeacher,
+  addNotesTeacher,
 };

@@ -1,62 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getSubjectsByStudent, addFeedback } from "../actions/apis"; // Assuming these APIs are imported
 
 function FeedbackPage() {
-  // Faculty list and corresponding subjects
-  const facultyList = [
-    { name: "Dr. Smith", subjects: ["Maths I", "Maths II", "Algebra"] },
-    { name: "Prof. Johnson", subjects: ["Physics", "Electromagnetism"] },
-    { name: "Dr. Lee", subjects: ["Computer Science", "Operating Systems"] },
-  ];
-
   // State variables
-  const [selectedFaculty, setSelectedFaculty] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [feedback, setFeedback] = useState("");
+  const [subjects, setSubjects] = useState([]); // To hold the fetched subjects
+  const [selectedSubject, setSelectedSubject] = useState(""); // Selected subject
+  const [feedback, setFeedback] = useState(""); // Feedback text
+  const [loading, setLoading] = useState(false); // Loading state for the API call
+  const [error, setError] = useState(""); // Error handling state
 
-  // Handle faculty selection
-  const handleFacultyChange = (e) => {
-    setSelectedFaculty(e.target.value);
-    setSelectedSubject(""); // Reset subject when faculty changes
-  };
-
-  // Get subjects for the selected faculty
-  const subjectsForFaculty =
-    facultyList.find((faculty) => faculty.name === selectedFaculty)?.subjects || [];
+  // Fetch subjects when the component mounts
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const response = await getSubjectsByStudent(); // Fetch subjects from the backend
+        console.log(response.subjects);
+        if (response && response.subjects) {
+          setSubjects(response.subjects);
+        }
+      } catch (error) {
+        console.error("Failed to fetch subjects:", error);
+        setError("Failed to load subjects. Please try again later.");
+      }
+    };
+    fetchSubjects();
+  }, []);
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Feedback submitted:\nFaculty: ${selectedFaculty}\nSubject: ${selectedSubject}\nFeedback: ${feedback}`);
-    setSelectedFaculty("");
-    setSelectedSubject("");
-    setFeedback("");
+
+    if (!selectedSubject || !feedback) {
+      setError("Please select a subject and provide feedback.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const data = {
+        subjectID: selectedSubject,
+        feedback,
+        user_id: "studentID_here", // You should replace this with the actual student ID
+        role: "student",
+      };
+
+      const response = await addFeedback(data); // Send feedback to the backend
+      if (response && response.message) {
+        alert(response.message);
+        setFeedback(""); // Reset feedback form after successful submission
+        setSelectedSubject(""); // Reset subject dropdown
+      }
+    } catch (error) {
+      console.error("Failed to add feedback:", error);
+      setError(error.message || "Failed to add feedback.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold">Feedback</h1>
-      <p className="mt-4 text-gray-600">Submit feedback about teachers or the portal here.</p>
+      <h1 className="text-2xl font-bold">Submit Feedback</h1>
+      <p className="mt-4 text-gray-600">Please provide your feedback below.</p>
+
+      {/* Display error message if any */}
+      {error && <p className="text-red-500">{error}</p>}
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        {/* Faculty Dropdown */}
-        <div>
-          <label className="block font-medium">Select Faculty:</label>
-          <select
-            value={selectedFaculty}
-            onChange={handleFacultyChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded"
-          >
-            <option value="" disabled>
-              -- Select Faculty --
-            </option>
-            {facultyList.map((faculty, index) => (
-              <option key={index} value={faculty.name}>
-                {faculty.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Subject Dropdown */}
         <div>
           <label className="block font-medium">Select Subject:</label>
@@ -64,16 +75,19 @@ function FeedbackPage() {
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
             className="w-full mt-1 p-2 border border-gray-300 rounded"
-            disabled={!selectedFaculty}
           >
             <option value="" disabled>
-              {selectedFaculty ? "-- Select Subject --" : "Select a faculty first"}
+              -- Select Subject --
             </option>
-            {subjectsForFaculty.map((subject, index) => (
-              <option key={index} value={subject}>
-                {subject}
-              </option>
-            ))}
+            {subjects.length > 0 ? (
+              subjects.map((subject) => (
+                <option key={subject.SubjectId} value={subject.SubjectId}>
+                  {subject.name}
+                </option>
+              ))
+            ) : (
+              <option disabled>No subjects available</option>
+            )}
           </select>
         </div>
 
@@ -95,9 +109,9 @@ function FeedbackPage() {
         <button
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          disabled={!selectedFaculty || !selectedSubject || !feedback}
+          disabled={loading || !selectedSubject || !feedback}
         >
-          Submit Feedback
+          {loading ? "Submitting..." : "Submit Feedback"}
         </button>
       </form>
     </div>
