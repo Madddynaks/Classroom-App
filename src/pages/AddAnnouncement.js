@@ -13,6 +13,14 @@ function AddAnnouncement({ addAnnouncement }) {
   //   setSubjects(getSubjectsByTeacher());
   //   console.log(subjects);
   // },[])
+  useEffect(() => {
+    const assignSubjects = async () => {
+      const sub = await getSubjectsByTeacher();
+      setSubjects(sub);
+      console.log(sub)
+    }
+    assignSubjects();
+  },[])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,7 +35,7 @@ function AddAnnouncement({ addAnnouncement }) {
     alert("Announcement added!");
   };
   const addSelectedSubjects=()=>{
-    
+
   }
   return (
     <>
