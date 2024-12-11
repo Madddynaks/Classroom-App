@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { viewNotesStudent, viewNotesTeacher } from '../actions/apis';
-import { getCookie } from '../actions/cookie';
-import { validateToken } from '../actions/utils';
+import React, { useState, useEffect } from "react";
+import { fetchAllSubjects, viewNotesStudent, viewNotesTeacher } from "../actions/apis";
+import { getCookie } from "../actions/cookie";
+import { validateToken } from "../actions/utils";
 
 function NotesPage() {
   const [notes, setNotes] = useState([]); // Array of notes from the API
-  const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState(''); // Selected subject ID
+  const [subjects, setSubjects] = useState([{}]);
+  const [selectedSubject, setSelectedSubject] = useState(""); // Selected subject ID
   const [filteredNotes, setFilteredNotes] = useState([]); // Notes for the selected subject
-  const [role, setRole] = useState('');
-
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     const handleAuthentication = async () => {
       const auth = getCookie();
       if (auth) {
-        const result = await  validateToken(auth);
-        const userRole = result.role
+        const result = await validateToken(auth);
+        const userRole = result.role;
         setRole(userRole);
         console.log("Role is", userRole);
       }
@@ -32,14 +31,15 @@ function NotesPage() {
         const response = await viewNotesTeacher();
         console.log("API Response:", response); // Debug API response
         setNotes(response.notes || []); // Ensure Notes are set as an array
+        const result=await fetchAllSubjects();
         const unique = response.notes.reduce((acc, note) => {
-          if (!acc[note.subjectID]) {
-            acc[note.subjectID] = true; // Mark subjectID as seen
+          const subjectName=result.subjects.find((subject)=>subject.SubjectId===note.subjectID);
+          if (!acc[subjectName.name]) {
+            acc[subjectName.name] = true; // Mark subjectID as seen
           }
           return acc;
         }, {});
         setSubjects(unique);
-        
       } catch (error) {
         console.error("Error fetching notes:", error);
         setNotes([]); // Fallback to empty array in case of error
@@ -47,35 +47,31 @@ function NotesPage() {
     };
     const fetchStudentNotes = async () => {
       try {
-        const response = await viewNotesStudent();
+        const response = await viewNotesTeacher();
         console.log("API Response:", response); // Debug API response
-        setNotes(response.notes || []); // Ensure notes are set as an array
+        setNotes(response.notes || []); // Ensure Notes are set as an array
+        const result=await fetchAllSubjects();
         const unique = response.notes.reduce((acc, note) => {
-          if (!acc[note.subjectID]) {
-            acc[note.subjectID] = true; // Mark subjectID as seen
-            // setSubjects((prevSubjects) => [...prevSubjects, note.subjectID]); // Add unique subjectID to the state
+          const subjectName=result.subjects.find((subject)=>subject.SubjectId===note.subjectID);
+          if (!acc[subjectName.name]) {
+            acc[subjectName.name] = true; // Mark subjectID as seen
           }
           return acc;
         }, {});
         setSubjects(unique);
-        console.log(subjects);
-        
       } catch (error) {
         console.error("Error fetching notes:", error);
         setNotes([]); // Fallback to empty array in case of error
       }
     };
-    if(role === "Teacher"){
+
+    if (role === "Teacher") {
       fetchTeacherNotes();
     }
-    if(role === "Student"){
+    if (role === "Student") {
       fetchStudentNotes();
     }
-
-    
-    
-  }, []);
-  
+  }, [role]);
 
   // Handle subject dropdown change
   const handleSubjectChange = (event) => {
@@ -100,9 +96,9 @@ function NotesPage() {
           className="block w-72 p-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition duration-300 ease-in-out hover:shadow-lg cursor-pointer"
         >
           <option value="">-- Select Subject --</option>
-          {notes.map((note) => (
-            <option key={note.subjectID} value={note.subjectID}>
-              {note.subjectID}
+          {Object.keys(subjects).map((subject) => (
+            <option key={subject} value={subject}>
+              {subject}
             </option>
           ))}
         </select>
