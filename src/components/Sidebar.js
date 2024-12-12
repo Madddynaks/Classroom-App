@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { deleteCookie, getCookie } from "../actions/cookie";
 import { validateToken } from "../actions/utils";
+import { FaHome, FaBook, FaComments, FaCog, FaPlus, FaUser } from "react-icons/fa"; // Importing some icons for visual appeal
 
 function Sidebar() {
   // Logout function
@@ -10,6 +11,7 @@ function Sidebar() {
   };
 
   const [role, setRole] = useState("");
+  const [collapsed, setCollapsed] = useState(false); // State to handle collapsing
 
   useEffect(() => {
     const handleAuthentication = async () => {
@@ -26,80 +28,105 @@ function Sidebar() {
   }, []);
 
   return (
-    <div className="w-64 bg-white shadow-lg h-full">
-      <div className="p-4 text-center text-blue-600 text-xl font-bold">
-        Classroom App
+    <div className={`w-${collapsed ? "20" : "64"} bg-white shadow-lg h-full transition-all duration-300`}>
+      <div className="p-4 text-center text-blue-600 text-xl font-bold flex items-center justify-between">
+        {/* Title */}
+        {!collapsed && <span>Classroom App</span>}
+        {/* Toggle Button */}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="text-gray-600 focus:outline-none"
+        >
+          <span className={`text-2xl ${collapsed ? "rotate-180" : ""} transition-all duration-300`}>⮜</span>
+        </button>
       </div>
-      <nav>
-        {/* Static navigation links */}
+
+      <nav className="mt-4">
+        {/* Home Link */}
         <NavLink
           to="/"
           className={({ isActive }) =>
-            `block px-4 py-2 text-gray-700 hover:bg-gray-200 ${
+            `flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 transition duration-200 ${
               isActive ? "bg-blue-100 text-blue-600" : ""
             }`
           }
         >
-          Home
+          <FaHome className="mr-2" /> {!collapsed && "Home"}
         </NavLink>
 
+        {/* Notes Link */}
         <NavLink
           to="/notes"
           className={({ isActive }) =>
-            `block px-4 py-2 text-gray-700 hover:bg-gray-200 ${
+            `flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 transition duration-200 ${
               isActive ? "bg-blue-100 text-blue-600" : ""
             }`
           }
         >
-          Notes
+          <FaBook className="mr-2" /> {!collapsed && "Notes"}
         </NavLink>
 
+        {/* Feedback Link (For Student Only) */}
         {role === "Student" && (
           <NavLink
             to="/feedback"
             className={({ isActive }) =>
-              `block px-4 py-2 text-gray-700 hover:bg-gray-200 ${
+              `flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 transition duration-200 ${
                 isActive ? "bg-blue-100 text-blue-600" : ""
               }`
             }
           >
-            Feedback
+            <FaComments className="mr-2" /> {!collapsed && "Feedback"}
           </NavLink>
         )}
 
+        {/* Manage Notes (For Non-Students Only) */}
         {role !== "Student" && (
           <NavLink
             to="/manage-notes"
             className={({ isActive }) =>
-              `block px-4 py-2 text-gray-700 hover:bg-gray-200 ${
+              `flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 transition duration-200 ${
                 isActive ? "bg-blue-100 text-blue-600" : ""
               }`
             }
           >
-            Manage Notes
+            <FaCog className="mr-2" /> {!collapsed && "Manage Notes"}
           </NavLink>
         )}
 
+        {/* Add Announcement (For Non-Students Only) */}
         {role !== "Student" && (
           <NavLink
             to="/add-announcement"
             className={({ isActive }) =>
-              `block px-4 py-2 text-gray-700 hover:bg-gray-200 ${
+              `flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 transition duration-200 ${
                 isActive ? "bg-blue-100 text-blue-600" : ""
               }`
             }
           >
-            Add Announcement
+            <FaPlus className="mr-2" /> {!collapsed && "Add Announcement"}
           </NavLink>
         )}
+
+        {/* Profile Link */}
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            `flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 transition duration-200 ${
+              isActive ? "bg-blue-100 text-blue-600" : ""
+            }`
+          }
+        >
+          <FaUser className="mr-2" /> {!collapsed && "Profile"}
+        </NavLink>
       </nav>
 
       {/* Logout Button */}
       <button
-        className="block px-4 py-2 mt-4 w-full text-gray-700 hover:bg-gray-200 bg-red-500"
         onClick={handleLogout}
+        className="block w-full mt-6 px-4 py-2 bg-red-500 text-white hover:bg-red-600 transition duration-200"
       >
-        Logout
+        {collapsed ? "Logout" : "Logout"}
       </button>
     </div>
   );

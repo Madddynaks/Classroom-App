@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Cookies from 'js-cookie';
 import { getCookie } from './actions/cookie';
 import { validateToken } from './actions/utils';
+import Profile from './pages/Profile';
 
 
 
@@ -70,6 +71,10 @@ function App() {
             <Route 
               path="/add-announcement" 
               element={token ? <AddAnnouncement addAnnouncement={addAnnouncement} /> : <Navigate to="/login" />} 
+            />
+            <Route 
+              path="/profile" 
+              element={token ? <Profile /> : <Navigate to="/login" />} 
             />
 
             {/* Catch-all route for 404 */}

@@ -14,9 +14,9 @@ function FeedbackPage() {
     const fetchSubjects = async () => {
       try {
         const response = await getSubjectsByStudent(); // Fetch subjects from the backend
-        console.log(response.subjects);
         if (response && response.subjects) {
           setSubjects(response.subjects);
+          console.log(response.subjects)
         }
       } catch (error) {
         console.error("Failed to fetch subjects:", error);
@@ -27,30 +27,59 @@ function FeedbackPage() {
   }, []);
 
   // Handle form submission
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!selectedSubject || !feedback) {
+  //     setError("Please select a subject and provide feedback.");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+
+  //   try {
+
+  //     const response = await addFeedback({
+  //       subjectId: selectedSubject,
+  //       feedback,
+  //       user_id: 'teacherId', // Replace this with the actual teacher ID from the session or context
+  //       role: 'Student', // Add the role of the user
+  //     });
+  //       alert(response.message);
+  //       setFeedback(""); // Reset feedback form after successful submission
+  //       setSelectedSubject(""); // Reset subject dropdown
+  //   } catch (error) {
+  //     console.error("Failed to add feedback:", error);
+  //     setError(error.message || "Failed to add feedback.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!selectedSubject || !feedback) {
       setError("Please select a subject and provide feedback.");
       return;
     }
-
+  
+    console.log("Selected Subject:", selectedSubject);  // Log selected subject
+    console.log("Feedback:", feedback);  // Log feedback content
+  
     setLoading(true);
-
+  
     try {
-      const data = {
+      const response = await addFeedback({
         subjectID: selectedSubject,
         feedback,
-        user_id: "studentID_here", // You should replace this with the actual student ID
-        role: "student",
-      };
-
-      const response = await addFeedback(data); // Send feedback to the backend
-      if (response && response.message) {
-        alert(response.message);
-        setFeedback(""); // Reset feedback form after successful submission
-        setSelectedSubject(""); // Reset subject dropdown
-      }
+        user_id: 'studentId', // Replace with actual student ID
+        role: 'Student',
+      });
+  
+      alert(response.message);
+      setFeedback(""); // Reset feedback form after successful submission
+      setSelectedSubject(""); // Reset subject dropdown
     } catch (error) {
       console.error("Failed to add feedback:", error);
       setError(error.message || "Failed to add feedback.");
@@ -58,6 +87,7 @@ function FeedbackPage() {
       setLoading(false);
     }
   };
+  
 
   return (
     <div>

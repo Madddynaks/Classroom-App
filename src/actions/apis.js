@@ -70,7 +70,7 @@ export const fetchAnnouncements = async () => {
     try {
       const token = Cookies.get("token"); // Ensure token is retrieved correctly
       
-      const response = await API.post("/getSubjectsByStudent", {}, { 
+      const response = await API.post("/feedback/get-subjects", {}, { 
         headers: { token } // Send token in headers for authentication
       });
       
@@ -141,13 +141,13 @@ export const fetchAnnouncements = async () => {
     try {
       const token = Cookies.get("token"); // Get token from cookies
       
-      const response = await API.post("/add-feedback", data, {
+      const response = await API.post("/feedback/add-feedback", data, {
         headers: { token }
       });
   
       return response.data; // Return the server response (success message, etc.)
     } catch (error) {
-      console.error("Error adding feedback:", error);
+      console.error("Error adding feedback:", error.response?.data || error.message);
       throw new Error(error.response?.data?.message || "Failed to add feedback");
     }
   };

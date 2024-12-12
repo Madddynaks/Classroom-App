@@ -3,7 +3,7 @@ import { getSubjectsByTeacher, addNotesTeacher } from '../actions/apis'; // Impo
 
 function ManageNotes() {
   const [subjects, setSubjects] = useState([]); // List of subjects
-  const [selectedSubject, setSelectedSubject] = useState(''); // Selected subject ID
+  const [selectedSubject, setSelectedSubject] = useState(""); // Selected subject ID
   const [noteText, setNoteText] = useState(''); // Note text
   const [loading, setLoading] = useState(false); // Loading state
   const [fetchingSubjects, setFetchingSubjects] = useState(false); // State for fetching subjects
