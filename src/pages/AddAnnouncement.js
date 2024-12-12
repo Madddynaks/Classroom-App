@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { getSubjectsByTeacher } from "../actions/apis";
+import { getSubjectsByTeacher, addAnnouncement } from "../actions/apis";
 import TeacherSubject from "../components/DataGrid";
 import { DialogContent, DialogTitle, Modal, ModalClose, ModalDialog } from "@mui/joy";
+
 
 function AddAnnouncement() {
   const [announcement, setAnnouncement] = useState("");
@@ -26,16 +27,40 @@ function AddAnnouncement() {
     assignSubjects();
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // const newAnnouncement = {
-    //   semesters:selectedSubjects,
-    //   text: announcement,
-    // };
-    // addAnnouncement(newAnnouncement);
-    // setAnnouncement("");
-    // alert("Announcement added!");
+  
+    // Validate selected subjects and announcement text
+    if (!selectedSubjects || selectedSubjects.length === 0) {
+      alert("Please select at least one subject.");
+      return;
+    }
+    if (!announcement.trim()) {
+      alert("Announcement text cannot be empty.");
+      return;
+    }
+  
+    const newAnnouncement = {
+      semesters: selectedSubjects, // Ensure this is an array of valid semester IDs
+      announcementText: announcement.trim(), // Trim whitespace from the announcement text
+    };
+  
+    try {
+      const result = await addAnnouncement(newAnnouncement);
+      console.log(result)
+      // Check if the announcement was successfully added
+      if (result.message==="Announcements added successfully") {
+        setAnnouncement(""); // Reset the announcement input
+        alert("Announcement added successfully!");
+      } else {
+        alert(`Failed to add announcement: ${result.message || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("Error adding announcement:", error);
+      alert("An error occurred while adding the announcement. Please try again.");
+    }
   };
+  
 
   useEffect(() => {
     const changeIds = () => {

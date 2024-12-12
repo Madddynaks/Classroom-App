@@ -1,24 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { viewNotesStudent, viewNotesTeacher } from '../actions/apis';
-import { getCookie } from '../actions/cookie';
-import { validateToken } from '../actions/utils';
+import React, { useState, useEffect } from "react";
+import { fetchAllSubjects, viewNotesStudent, viewNotesTeacher } from "../actions/apis";
+import { getCookie } from "../actions/cookie";
+import { validateToken } from "../actions/utils";
 
 function NotesPage() {
   const [notes, setNotes] = useState([]); // Array of notes from the API
-  const [subjects, setSubjects] = useState([]);
-  const [selectedSubject, setSelectedSubject] = useState(''); // Selected subject ID
+  const [subjects, setSubjects] = useState([]); // Array of subjects
+  const [selectedSubject, setSelectedSubject] = useState(""); // Selected subject ID
   const [filteredNotes, setFilteredNotes] = useState([]); // Notes for the selected subject
-  const [role, setRole] = useState('');
-
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     const handleAuthentication = async () => {
       const auth = getCookie();
       if (auth) {
-        const result = await  validateToken(auth);
-        const userRole = result.role
-        setRole(userRole);
-        console.log("Role is", userRole);
+        try {
+          const result = await validateToken(auth);
+          setRole(result.role || "");
+          console.log("Role is", result.role);
+        } catch (error) {
+          console.error("Error validating token:", error);
+        }
       }
     };
 
@@ -27,55 +29,33 @@ function NotesPage() {
 
   // Fetch data from the API
   useEffect(() => {
-    const fetchTeacherNotes = async () => {
+    const fetchNotes = async () => {
       try {
-        const response = await viewNotesTeacher();
-        console.log("API Response:", response); // Debug API response
-        setNotes(response.notes || []); // Ensure Notes are set as an array
-        const unique = response.notes.reduce((acc, note) => {
-          if (!acc[note.subjectID]) {
-            acc[note.subjectID] = true; // Mark subjectID as seen
-          }
-          return acc;
-        }, {});
-        setSubjects(unique);
-        
-      } catch (error) {
-        console.error("Error fetching notes:", error);
-        setNotes([]); // Fallback to empty array in case of error
-      }
-    };
-    const fetchStudentNotes = async () => {
-      try {
-        const response = await viewNotesStudent();
-        console.log("API Response:", response); // Debug API response
-        setNotes(response.notes || []); // Ensure notes are set as an array
-        const unique = response.notes.reduce((acc, note) => {
-          if (!acc[note.subjectID]) {
-            acc[note.subjectID] = true; // Mark subjectID as seen
-            // setSubjects((prevSubjects) => [...prevSubjects, note.subjectID]); // Add unique subjectID to the state
-          }
-          return acc;
-        }, {});
-        setSubjects(unique);
-        console.log(subjects);
-        
-      } catch (error) {
-        console.error("Error fetching notes:", error);
-        setNotes([]); // Fallback to empty array in case of error
-      }
-    };
-    if(role === "Teacher"){
-      fetchTeacherNotes();
-    }
-    if(role === "Student"){
-      fetchStudentNotes();
-    }
+        const response =
+          role === "Teacher" ? await viewNotesTeacher() : await viewNotesStudent();
+        setNotes(response.notes || []);
 
-    
-    
-  }, []);
-  
+        const subjectsResponse = await fetchAllSubjects();
+        const uniqueSubjects = response.notes.reduce((acc, note) => {
+          const subject = subjectsResponse.subjects.find(
+            (subject) => subject.SubjectId === note.subjectID
+          );
+          if (subject && !acc.find((item) => item.id === subject.SubjectId)) {
+            acc.push({ id: subject.SubjectId, name: subject.name });
+          }
+          return acc;
+        }, []);
+
+        setSubjects(uniqueSubjects);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setNotes([]);
+        setSubjects([]);
+      }
+    };
+
+    if (role) fetchNotes();
+  }, [role]);
 
   // Handle subject dropdown change
   const handleSubjectChange = (event) => {
@@ -100,9 +80,9 @@ function NotesPage() {
           className="block w-72 p-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition duration-300 ease-in-out hover:shadow-lg cursor-pointer"
         >
           <option value="">-- Select Subject --</option>
-          {notes.map((note) => (
-            <option key={note.subjectID} value={note.subjectID}>
-              {note.subjectID}
+          {subjects.map((subject) => (
+            <option key={subject.id} value={subject.id}>
+              {subject.name}
             </option>
           ))}
         </select>
@@ -111,7 +91,6 @@ function NotesPage() {
       {/* Display notes for the selected subject */}
       {selectedSubject && (
         <div className="mt-8">
-          <h2 className="text-xl font-semibold mb-4">Notes for Subject ID: {selectedSubject}</h2>
           {filteredNotes.length === 0 ? (
             <p className="text-gray-500">No notes available for this subject.</p>
           ) : (
@@ -122,7 +101,7 @@ function NotesPage() {
                   className="p-4 border rounded-lg shadow-md bg-white hover:shadow-lg transition-shadow duration-200"
                 >
                   <p className="text-gray-600 text-sm mb-4">User ID: {note.userID}</p>
-                  <p className="text-lg  text-gray-800 mb-2">{note.note}</p>
+                  <p className="text-lg text-gray-800 mb-2">{note.note}</p>
                 </div>
               ))}
             </div>

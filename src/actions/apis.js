@@ -118,6 +118,24 @@ export const fetchAnnouncements = async () => {
       throw new Error(error.response?.data?.message || "Failed to fetch notes");
     }
   };
+  export const fetchAllSubjects= async () => {
+    try {
+      const token = Cookies.get("token"); // Get the token from cookies
+  
+      // If token exists, include it in the request header as 'token'
+      const response = await API.get("/fetchAllSubjects", {}, { // Passing empty object for body
+        headers: {
+          token: token, // Send token in headers
+        },
+      });
+  
+    //   console.log(response.data); // Check response data in console
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error("Fetch Subjects API error:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Failed to fetch subjects");
+    }
+  };
 
   export const addNotesTeacher = async (data) => {
     try {
@@ -149,6 +167,20 @@ export const fetchAnnouncements = async () => {
     } catch (error) {
       console.error("Error adding feedback:", error.response?.data || error.message);
       throw new Error(error.response?.data?.message || "Failed to add feedback");
+    }
+  };
+  export const addAnnouncement = async (data) => {
+    try {
+      const token = Cookies.get("token"); // Get token from cookies
+      
+      const response = await API.post("/announcements/add", data, {
+        headers: { token }
+      });
+  
+      return response.data; // Return the server response (success message, etc.)
+    } catch (error) {
+      console.error("Error adding announcement:", error);
+      throw new Error(error.response?.data?.message || "Failed to add  announcement");
     }
   };
 
