@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { deleteCookie, getCookie } from "../actions/cookie";
 import { validateToken } from "../actions/utils";
-import { FaHome, FaBook, FaComments, FaCog, FaPlus, FaUser } from "react-icons/fa"; // Importing some icons for visual appeal
+import {
+  FaHome,
+  FaBook,
+  FaComments,
+  FaCog,
+  FaPlus,
+  FaUser,
+} from "react-icons/fa"; // Importing some icons for visual appeal
 
 function Sidebar() {
   // Logout function
@@ -28,7 +35,11 @@ function Sidebar() {
   }, []);
 
   return (
-    <div className={`w-${collapsed ? "20" : "64"} bg-white shadow-lg h-full transition-all duration-300`}>
+    <div
+      className={`w-${
+        collapsed ? "20" : "64"
+      } bg-white shadow-lg h-full transition-all duration-300`}
+    >
       <div className="p-4 text-center text-blue-600 text-xl font-bold flex items-center justify-between">
         {/* Title */}
         {!collapsed && <span>Classroom App</span>}
@@ -37,7 +48,13 @@ function Sidebar() {
           onClick={() => setCollapsed(!collapsed)}
           className="text-gray-600 focus:outline-none"
         >
-          <span className={`text-2xl ${collapsed ? "rotate-180" : ""} transition-all duration-300`}>⮜</span>
+          <span
+            className={`text-2xl ${
+              collapsed ? "rotate-180" : ""
+            } transition-all duration-300`}
+          >
+            ⮜
+          </span>
         </button>
       </div>
 
@@ -105,6 +122,19 @@ function Sidebar() {
             }
           >
             <FaPlus className="mr-2" /> {!collapsed && "Add Announcement"}
+          </NavLink>
+        )}
+
+        {role !== "Student" && (
+          <NavLink
+            to="/assign-subjects"
+            className={({ isActive }) =>
+              `flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200 transition duration-200 ${
+                isActive ? "bg-blue-100 text-blue-600" : ""
+              }`
+            }
+          >
+            <FaBook className="mr-2" /> {!collapsed && "Assign Subjects"}
           </NavLink>
         )}
 

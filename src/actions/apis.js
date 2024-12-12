@@ -4,7 +4,7 @@ import { setCookie } from "./cookie";
 
 // Set up a base URL for all API requests
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // Replace with your backend base URL
+  baseURL: "https://classroom-app-backend-prly.onrender.com/api", // Replace with your backend base URL
   headers: {
     "Content-Type": "application/json",
   },
@@ -66,6 +66,64 @@ export const fetchAnnouncements = async () => {
     }
   };
 
+  // export const getAvailableSubjects= async () => {
+  //   try {
+  //     const token = Cookies.get("token"); // Get the token from cookies
+  
+  //     // If token exists, include it in the request header as 'token'
+  //     const response = await API.post("/unassignedSubjects", {}, { // Passing empty object for body
+  //       headers: {
+  //         token: token, // Send token in headers
+  //       },
+  //     });
+  
+  //   //   console.log(response.data); // Check response data in console
+  //     return response.data; // Return the response data
+  //   } catch (error) {
+  //     console.error("Fetch Announcements API error:", error.response?.data || error.message);
+  //     throw new Error(error.response?.data?.message || "Failed to fetch subjects");
+  //   }
+  // };
+
+  // export const assignSubjectTeacher = async (data) => {
+  //   try {
+  //     const token = Cookies.get("token"); // Get the token from cookies
+  
+  //     // Send the subjectId and noteText in the request body
+  //     const response = await API.post("/assignSubjects", data, {
+  //       headers: {
+  //         token: token, // Send token in headers
+  //       },
+  //     });
+  
+  //     return response.data; // Return the response data
+  //   } catch (error) {
+  //     console.error("Fetch Announcements API error:", error.response?.data || error.message);
+  //     throw new Error(error.response?.data?.message || "Failed to add Note");
+  //   }
+  // };
+
+  export const getAvailableSubjects = async () => {
+    try {
+      const token = Cookies.get("token");
+      const response = await API.post("/unassignedSubjects", {}, { headers: { token } });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching unassigned subjects:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Failed to fetch unassigned subjects");
+    }
+  };
+  
+  export const assignSubjectTeacher = async (data) => {
+    try {
+      const token = Cookies.get("token");
+      const response = await API.post("/assignSubjects", data, { headers: { token } });
+      return response.data;
+    } catch (error) {
+      console.error("Error assigning subject:", error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || "Failed to assign subject");
+    }
+  };
   export const getSubjectsByStudent = async () => {
     try {
       const token = Cookies.get("token"); // Ensure token is retrieved correctly

@@ -12,6 +12,7 @@ import Cookies from 'js-cookie';
 import { getCookie } from './actions/cookie';
 import { validateToken } from './actions/utils';
 import Profile from './pages/Profile';
+import AssignSubjects from './pages/AssignSubjects';
 
 
 
@@ -71,6 +72,10 @@ function App() {
             <Route 
               path="/add-announcement" 
               element={token ? <AddAnnouncement addAnnouncement={addAnnouncement} /> : <Navigate to="/login" />} 
+            />
+            <Route 
+              path="/assign-subjects" 
+              element={token ? <AssignSubjects /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/profile" 
